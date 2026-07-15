@@ -280,6 +280,13 @@
 <div id="modalRoot"></div>
 <div id="toastRoot"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  window.db = window.supabase.createClient(
+    'https://xnlnhqjnzgsspgqvugic.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhubG5ocWpuemdzc3BncXZ1Z2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNzcxNzUsImV4cCI6MjA5OTY1MzE3NX0.LgJcHgp-cy94WlihYyDz6gTuXdbHaO-hx7nfT5jjDmc'
+  );
+</script>
 <script>
 /* ============================= ICONS ============================= */
 const ICN = {
@@ -306,15 +313,39 @@ const ICN = {
 function icon(name,extra=''){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" ${extra}>${ICN[name]||''}</svg>`;}
 
 /* ============================= STORAGE HELPERS ============================= */
+function browserStorageKey(key, shared){
+  return `intern-tracker:${shared ? 'shared' : 'local'}:${key}`;
+}
 async function sGet(key, shared=true){
-  try{ const r = await window.storage.get(key, shared); return r ? JSON.parse(r.value) : null; }
-  catch(e){ return null; }
+  try{
+    if(window.storage && typeof window.storage.get==='function'){
+      const r = await window.storage.get(key, shared);
+      if(r) return JSON.parse(r.value);
+    }
+  }catch(e){ console.warn('Preview storage unavailable; using browser storage.', e); }
+  try{
+    const value = localStorage.getItem(browserStorageKey(key, shared));
+    return value ? JSON.parse(value) : null;
+  }catch(e){ return null; }
 }
 async function sSet(key, val, shared=true){
-  try{ const r = await window.storage.set(key, JSON.stringify(val), shared); return !!r; }
-  catch(e){ console.error('storage set failed', e); return false; }
+  try{
+    if(window.storage && typeof window.storage.set==='function'){
+      const r = await window.storage.set(key, JSON.stringify(val), shared);
+      if(r) return true;
+    }
+  }catch(e){ console.warn('Preview storage unavailable; using browser storage.', e); }
+  try{
+    localStorage.setItem(browserStorageKey(key, shared), JSON.stringify(val));
+    return true;
+  }catch(e){ console.error('storage set failed', e); return false; }
 }
-async function sDel(key, shared=true){ try{ await window.storage.delete(key, shared); }catch(e){} }
+async function sDel(key, shared=true){
+  try{
+    if(window.storage && typeof window.storage.delete==='function') await window.storage.delete(key, shared);
+  }catch(e){}
+  try{ localStorage.removeItem(browserStorageKey(key, shared)); }catch(e){}
+}
 
 /* ============================= STATE ============================= */
 const state = {
