@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,35 +68,33 @@
   }
   select:focus,input:focus,textarea:focus{border-color:var(--blue-line);}
   .btn{
+    box-sizing:border-box;
     border:none;
     border-radius:9px;
-    padding:8px 14px;
-    font-size:13px;
+    min-height:38px;
+    padding:9px 16px;
+    font-size:13.5px;
     font-weight:600;
+    line-height:1.2;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    gap:6px;
-    height:38px;
-    line-height:1;
-}
-
-.btn-full{
+    gap:7px;
+    cursor:pointer;
+  }
+  .btn-full{
+    display:flex;
     width:100%;
-    height:40px;
-    padding:0 14px;
+    min-height:40px;
     margin-top:6px;
-}
+  }
+  .btn svg{
+    width:16px;
+    height:16px;
+    flex:0 0 16px;
   }
   .btn-primary{background:var(--blue);color:#fff;}
   .btn-primary:hover{background:#2f6fe0;}
-  .btn{
-    padding:10px 16px;
-    font-size:13.5px;
-    display:inline-flex;
-    align-items:center;
-    gap:7px;
-}
   .btn-ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border);}
   .btn-ghost:hover{color:var(--text);border-color:var(--text-faint);}
   .btn-soft{background:var(--blue-dim);color:var(--blue);}
@@ -268,7 +267,7 @@
     .row-2{grid-template-columns:1fr;}
   }
 </style>
-<style>.btn,.nav-item,.mode-btn,.seg button,.role-tab,.quick-btn,.photo-remove,.modal-close{width:auto!important;height:auto;}.btn-full{width:100%!important;}</style></head>
+</head>
 <body>
 
 <div id="loginScreen"></div>
@@ -334,6 +333,27 @@ const state = {
 function todayStr(){
   const d = new Date();
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function newDailyDraft(){
+  return {
+    ticketing:{mode:null,remark:'',photo:null},
+    email:{mode:null,remark:'',photo:null},
+    infographic:{items:{review:false,design:false,upload:false}},
+    completedAt:null,
+  };
+}
+let dailyRolloverTimer;
+function scheduleDailyRollover(){
+  clearTimeout(dailyRolloverTimer);
+  const nextDay = new Date();
+  nextDay.setHours(24,0,2,0);
+  dailyRolloverTimer = setTimeout(async ()=>{
+    if(state.user && state.user.role==='intern'){
+      state.dateSel = todayStr();
+      if(state.view==='dailylog') await loadDraftAndRender();
+    }
+    scheduleDailyRollover();
+  }, nextDay - new Date());
 }
 function isThursday(dateStr){
   const [y,m,d] = dateStr.split('-').map(Number);
@@ -433,7 +453,7 @@ function renderInternLogin(){
       <div class="field" style="margin-top:8px">
         <input type="text" name="newName" placeholder="Type your full name to add yourself">
       </div>
-      <button class="btn btn-primary btn-md" data-action="nav" data-view="dailylog">
+      <button class="btn btn-primary btn-full" type="submit">${icon('arrow')} Continue as Intern</button>
     </form>
   `;
 }
@@ -488,8 +508,9 @@ document.getElementById('loginScreen').addEventListener('submit', async e=>{
 function showApp(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('appShell').style.display='block';
+  scheduleDailyRollover();
   renderSidebar();
-  navigate(state.user.role==='supervisor' ? 'dashboard' : 'dashboard');
+  navigate('dashboard');
 }
 function renderSidebar(){
   const items = state.user.role==='supervisor'
@@ -688,25 +709,34 @@ function readonlyInfographicBlock(info){
 
 async function renderInternDailyLog(container){
   const name = state.user.name;
+  state.dateSel = todayStr();
   container.innerHTML = `
     <div class="page-head">
       <div><div class="eyebrow">Daily Log</div><div class="page-title">Log Your Daily Tasks</div><div class="page-desc">Fill this in every day before you sign off.</div></div>
     </div>
-    <div class="toolbar"><input type="date" id="dlDate" value="${state.dateSel}"></div>
+    <div class="toolbar"><span class="pill pill-blue">${icon('calendar')} Today · ${fmtDate(state.dateSel)}</span></div>
     <div id="dlBody"></div>
   `;
-  document.getElementById('dlDate').addEventListener('change', async e=>{ state.dateSel=e.target.value; await loadDraftAndRender(); });
   await loadDraftAndRender();
 }
 async function loadDraftAndRender(){
   const name = state.user.name;
   const existing = await sGet('daily:'+name+':'+state.dateSel, true);
-  state.draft = existing || { ticketing:{mode:null,remark:'',photo:null}, email:{mode:null,remark:'',photo:null}, infographic:{items:{review:false,design:false,upload:false}} };
+  state.draft = existing || newDailyDraft();
   renderDraft();
 }
 function renderDraft(){
   const body = document.getElementById('dlBody');
   if(!body) return;
+  if(state.draft.completedAt){
+    body.innerHTML = `
+      <div class="thu-banner">${icon('check2')} Daily task completed for ${fmtDate(state.dateSel)}. A new log will be available tomorrow.</div>
+      ${readonlyTaskBlock(1,'ticket','Ticketing System Support','Tickets handled across departments',state.draft.ticketing)}
+      ${readonlyTaskBlock(2,'mail','Email Issue Resolution','Bounce-back / send failures resolved',state.draft.email)}
+      ${isThursday(state.dateSel) ? readonlyInfographicBlock(state.draft.infographic) : ''}
+    `;
+    return;
+  }
   const thu = isThursday(state.dateSel);
   body.innerHTML = `
     ${editableTaskBlock(1,'ticket','Ticketing System Support','Log a ticket you handled today','ticketing','No ticket was submitted today.')}
@@ -903,7 +933,7 @@ document.addEventListener('click', async e=>{
 
   if(action==='nav'){ navigate(t.dataset.view); }
   else if(action==='toggle-theme'){ document.body.classList.toggle('light'); }
-  else if(action==='logout'){ await sDel('current-user', false); state.user=null; showLogin(); }
+  else if(action==='logout'){ clearTimeout(dailyRolloverTimer); await sDel('current-user', false); state.user=null; showLogin(); }
 
   else if(action==='set-mode'){
     state.draft[t.dataset.key].mode = t.dataset.mode;
@@ -932,8 +962,10 @@ document.addEventListener('click', async e=>{
     if(d.email.mode==='photo' && !d.email.photo){ toast('Upload a photo for the email task, or switch to remark', true); return; }
     if(d.email.mode==='remark' && !(d.email.remark||'').trim()){ toast('Add a remark for the email task', true); return; }
     d.ticketing.updatedAt = d.email.updatedAt = d.infographic.updatedAt = Date.now();
+    d.completedAt = Date.now();
     const ok = await sSet('daily:'+state.user.name+':'+state.dateSel, d, true);
-    if(ok) toast('Daily log saved'); else toast('Could not save. Try again.', true);
+    if(ok){ toast('Daily task completed. A new log will open tomorrow.'); renderDraft(); }
+    else toast('Could not save. Try again.', true);
   }
   else if(action==='reset-draft'){ await loadDraftAndRender(); toast('Changes discarded'); }
 
