@@ -547,19 +547,25 @@ async function ensureProfile(supabaseUser, fullName){
   return data;
 }
 
+/* ============================= DEPARTMENTS ============================= */
+const DEPARTMENTS = ['Marketing', 'Litigations', 'IT'];
+
 /* ============================= STATE ============================= */
 const state = {
   user: null,            // {id, name, role}
   interns: [],
+  internDepts: {},       // { internName: 'IT' | 'Marketing' | 'Litigations' }
   tasks: [],
   view: 'dashboard',
   dateSel: todayStr(),
+  deptFilter: '',        // '' = All departments
   logInternSel: null,
   draft: null,
   taskFilter: 'all',
   modalOpen: false,
   loading: true,
 };
+
 
 function todayStr(){
   const d = new Date();
@@ -633,8 +639,9 @@ function fileToCompressedDataURL(file, maxW=760, quality=0.62){
 
 /* ============================= BOOT ============================= */
 async function boot(){
-  state.interns = (await sGet('interns', true)) || [];
-  state.tasks   = (await sGet('tasks',   true)) || [];
+  state.interns     = (await sGet('interns',      true)) || [];
+  state.internDepts = (await sGet('internDepts',  true)) || {};
+  state.tasks       = (await sGet('tasks',        true)) || [];
 
   // Let Supabase restore any persisted session from localStorage first.
   // getSession() is sync-fast when the JWT is still valid.
@@ -717,6 +724,7 @@ function showLogin(){
 function renderInternLogin(){
   // No Google OAuth for interns — name + password only.
   const opts = state.interns.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+  const deptOpts = DEPARTMENTS.map(d=>`<option value="${d}">${d}</option>`).join('');
   return `
     <form data-action="login-intern">
       <div class="field">
@@ -730,6 +738,13 @@ function renderInternLogin(){
       <div class="field">
         <input type="text" name="newName" placeholder="Type your full name to register">
       </div>
+      <div class="field" id="deptField" style="display:none">
+        <label class="field-label">Department</label>
+        <select name="department">
+          <option value="">— Select your department —</option>
+          ${deptOpts}
+        </select>
+      </div>
       <div class="field">
         <label class="field-label" id="pwLabel">Password</label>
         <input type="password" name="password" id="internPw" placeholder="Enter your password" required>
@@ -739,6 +754,7 @@ function renderInternLogin(){
     </form>
   `;
 }
+
 
 function renderSupervisorLogin(){
   return `
@@ -768,6 +784,14 @@ function renderSupervisorLogin(){
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ============================= LOGIN EVENTS ============================= */
+// Show dept field when user types a new name
+document.getElementById('loginScreen').addEventListener('input', e=>{
+  if(e.target.name === 'newName'){
+    const deptField = document.getElementById('deptField');
+    if(deptField) deptField.style.display = e.target.value.trim() ? 'block' : 'none';
+  }
+});
+
 document.getElementById('loginScreen').addEventListener('click', e=>{
   const roleBtn = e.target.closest('[data-action="set-login-role"]');
   if(roleBtn){ loginRole = roleBtn.dataset.role; showLogin(); }
@@ -781,9 +805,10 @@ document.getElementById('loginScreen').addEventListener('submit', async e=>{
   const form = e.target;
 
   if(form.dataset.action === 'login-intern'){
-    const existing = form.existing.value;
-    const newName  = form.newName.value.trim();
-    const password = form.password.value;
+    const existing  = form.existing.value;
+    const newName   = form.newName.value.trim();
+    const password  = form.password.value;
+    const deptSel   = form.department ? form.department.value : '';
 
     // Must provide either a selected name or a typed name
     let name = existing || newName;
@@ -804,8 +829,9 @@ document.getElementById('loginScreen').addEventListener('submit', async e=>{
       }
       name = existing;
     } else {
-      // ── New intern: register name + password ───────────────────────
+      // ── New intern: register name + password + department ──────────
       if(!newName){ toast('Please type your full name to register.', true); return; }
+      if(!deptSel){ toast('Please select your department.', true); return; }
       if(state.interns.includes(newName)){
         // Name already exists — verify password instead
         const storedPw = await sGet('intern-pw:' + newName, true);
@@ -818,9 +844,11 @@ document.getElementById('loginScreen').addEventListener('submit', async e=>{
           await sSet('intern-pw:' + newName, password, true);
         }
       } else {
-        // Brand-new intern: add to roster and save password
+        // Brand-new intern: add to roster and save password + department
         state.interns.push(newName);
-        await sSet('interns', state.interns, true);
+        state.internDepts[newName] = deptSel;
+        await sSet('interns',      state.interns,      true);
+        await sSet('internDepts',  state.internDepts,  true);
         await sSet('intern-pw:' + newName, password, true);
         toast('Account created. Welcome, ' + newName + '!');
       }
@@ -1022,21 +1050,56 @@ async function renderDailyLogPage(container){
 }
 
 async function renderSupervisorDailyLog(container){
-  const internOpts = state.interns.map(n=>`<option value="${escapeHtml(n)}" ${state.logInternSel===n?'selected':''}>${escapeHtml(n)}</option>`).join('');
+  // Build dept options
+  const deptOpts = ['', ...DEPARTMENTS].map(d=>
+    `<option value="${d}" ${state.deptFilter===d?'selected':''}>${d||'All Departments'}</option>`
+  ).join('');
+
+  // Filter interns by selected department ('' = show all)
+  const filteredInterns = state.deptFilter
+    ? state.interns.filter(n => state.internDepts[n] === state.deptFilter)
+    : state.interns;
+
+  if(!state.logInternSel || !filteredInterns.includes(state.logInternSel)){
+    state.logInternSel = filteredInterns[0] || null;
+  }
+
+  const internOpts = filteredInterns.map(n=>
+    `<option value="${escapeHtml(n)}" ${state.logInternSel===n?'selected':''}>${escapeHtml(n)}</option>`
+  ).join('');
+
   container.innerHTML = `
     <div class="page-head">
       <div><div class="eyebrow">Daily Logs</div><div class="page-title">Team Daily Task Log</div><div class="page-desc">Review what each intern submitted for a given day.</div></div>
     </div>
     <div class="toolbar">
       <input type="date" id="dlDate" value="${state.dateSel}">
-      <select id="dlIntern">${internOpts}</select>
+      <select id="dlDept">${deptOpts}</select>
+      <select id="dlIntern">
+        <option value="">— Select intern —</option>
+        ${internOpts}
+      </select>
     </div>
     <div id="dlBody"></div>
   `;
   document.getElementById('dlDate').addEventListener('change', e=>{ state.dateSel=e.target.value; renderSupervisorDailyLogBody(); });
-  document.getElementById('dlIntern').addEventListener('change', e=>{ state.logInternSel=e.target.value; renderSupervisorDailyLogBody(); });
+  document.getElementById('dlDept').addEventListener('change', e=>{
+    state.deptFilter = e.target.value;
+    // Re-filter interns and reset selection
+    const fi = state.deptFilter
+      ? state.interns.filter(n => state.internDepts[n] === state.deptFilter)
+      : state.interns;
+    state.logInternSel = fi[0] || null;
+    // Rebuild intern dropdown
+    const sel = document.getElementById('dlIntern');
+    sel.innerHTML = '<option value="">— Select intern —</option>' +
+      fi.map(n=>`<option value="${escapeHtml(n)}" ${state.logInternSel===n?'selected':''}>${escapeHtml(n)}</option>`).join('');
+    renderSupervisorDailyLogBody();
+  });
+  document.getElementById('dlIntern').addEventListener('change', e=>{ state.logInternSel=e.target.value||null; renderSupervisorDailyLogBody(); });
   await renderSupervisorDailyLogBody();
 }
+
 async function renderSupervisorDailyLogBody(){
   const body = document.getElementById('dlBody');
   if(!body) return;
