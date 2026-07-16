@@ -570,30 +570,26 @@ function showLogin(){
 }
 
 function renderInternLogin(){
-  // Google OAuth is the primary entry-point for interns.
-  // The dropdown is kept for legacy / offline-roster purposes (display only).
+  // No Google OAuth for interns — name + password only.
   const opts = state.interns.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
   return `
-    <!-- Google sign-in (primary) -->
-    <button class="btn btn-google btn-full" style="margin-bottom:0" data-action="login-google">
-      <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-      Continue with Google
-    </button>
-
-    <div class="divider">or sign in with name</div>
-
     <form data-action="login-intern">
       <div class="field">
-        <label class="field-label">Your name</label>
-        <select name="existing">
+        <label class="field-label">Select your name</label>
+        <select name="existing" id="internSelect">
           <option value="">— Select your name —</option>
           ${opts}
         </select>
       </div>
-      <div class="hint">Not on the list yet?</div>
-      <div class="field" style="margin-top:8px">
-        <input type="text" name="newName" placeholder="Type your full name to add yourself">
+      <div class="hint" style="margin-bottom:6px">Not on the list? Register below:</div>
+      <div class="field">
+        <input type="text" name="newName" placeholder="Type your full name to register">
       </div>
+      <div class="field">
+        <label class="field-label" id="pwLabel">Password</label>
+        <input type="password" name="password" id="internPw" placeholder="Enter your password" required>
+      </div>
+      <div class="hint" id="pwHint" style="margin-top:-6px;margin-bottom:8px">Returning intern: enter your existing password. New intern: create a password for your account.</div>
       <button class="btn btn-primary btn-full" type="submit">${icon('arrow')} Continue as Intern</button>
     </form>
   `;
@@ -619,7 +615,7 @@ function renderSupervisorLogin(){
         <input type="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
       </div>
       <button class="btn btn-primary btn-full" type="submit">${icon('arrow')} Continue as Supervisor</button>
-      <div class="hint">Supervisor role is verified from your profile in the database.</div>
+      <div class="hint">Supervisor role is verified from the database. If you get "Invalid credentials", use the <strong>Continue with Google</strong> button above instead — your account may not have a password set.</div>
     </form>
   `;
 }
@@ -640,18 +636,52 @@ document.getElementById('loginScreen').addEventListener('submit', async e=>{
   const form = e.target;
 
   if(form.dataset.action === 'login-intern'){
-    // Legacy name-based login (no Supabase auth session).
     const existing = form.existing.value;
     const newName  = form.newName.value.trim();
+    const password = form.password.value;
+
+    // Must provide either a selected name or a typed name
     let name = existing || newName;
-    if(!name){ toast('Please select or enter your name', true); return; }
-    if(newName && !existing){
-      if(!state.interns.includes(newName)){
+    if(!name){ toast('Please select your name or type a new one.', true); return; }
+    if(!password){ toast('Please enter your password.', true); return; }
+
+    if(existing && !newName){
+      // ── Returning intern: verify stored password ───────────────────
+      const storedPw = await sGet('intern-pw:' + existing, true);
+      if(!storedPw){
+        // First time logging in with a name that was added by a supervisor
+        // (no password set yet) → treat this login as the password-setup step.
+        await sSet('intern-pw:' + existing, password, true);
+        toast('Password set for your account. Welcome!');
+      } else if(storedPw !== password){
+        toast('Incorrect password. Try again.', true);
+        return;
+      }
+      name = existing;
+    } else {
+      // ── New intern: register name + password ───────────────────────
+      if(!newName){ toast('Please type your full name to register.', true); return; }
+      if(state.interns.includes(newName)){
+        // Name already exists — verify password instead
+        const storedPw = await sGet('intern-pw:' + newName, true);
+        if(storedPw && storedPw !== password){
+          toast('That name already exists. Wrong password.', true);
+          return;
+        }
+        if(!storedPw){
+          // Name exists but no password yet — set it now
+          await sSet('intern-pw:' + newName, password, true);
+        }
+      } else {
+        // Brand-new intern: add to roster and save password
         state.interns.push(newName);
         await sSet('interns', state.interns, true);
+        await sSet('intern-pw:' + newName, password, true);
+        toast('Account created. Welcome, ' + newName + '!');
       }
       name = newName;
     }
+
     state.user = { id: null, name, role: 'intern' };
     state.logInternSel = name;
     showApp();
