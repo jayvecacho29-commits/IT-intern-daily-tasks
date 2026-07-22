@@ -12,42 +12,43 @@
     rel="stylesheet">
   <style>
     /* ═══════════════════════════════════════════════════════════════
-     INTERN TRACKER — Neumorphic Dark · Indigo→Blue Gradient
-     Font: Geist (SaaS/dev) · Accent: #6366f1 → #3b82f6
+     INTERN TRACKER — Neumorphic Dark · STLAF Brand Palette
+     Font: Geist (SaaS/dev) · Accent: #365794 → #5F98B6 (deep blue → teal-blue)
+     Slate: #3E5E72 · Gold highlight: #EBD47A
   ═══════════════════════════════════════════════════════════════ */
 
     :root {
       /* ── Surfaces ── */
-      --bg: #111118;
-      --bg-sidebar: #0e0e15;
-      --bg-card: #16161f;
-      --bg-card-hover: #1b1b27;
-      --bg-input: #111118;
-      --border: #252535;
-      --border-soft: #1d1d2c;
+      --bg: #0a0e14;
+      --bg-sidebar: #080b10;
+      --bg-card: #111823;
+      --bg-card-hover: #161f2c;
+      --bg-input: #0a0e14;
+      --border: #212c3d;
+      --border-soft: #19222f;
 
       /* ── Typography ── */
-      --text: #e4e4f0;
-      --text-dim: #8686a4;
-      --text-faint: #4e4e6a;
+      --text: #e4e9f2;
+      --text-dim: #8592a8;
+      --text-faint: #4b5670;
 
-      /* ── Accent: Indigo → Blue ── */
-      --blue: #3b82f6;
-      --indigo: #6366f1;
-      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
-      --accent-glow: rgba(99, 102, 241, .28);
-      --blue-dim: rgba(99, 102, 241, .12);
-      --blue-line: rgba(99, 102, 241, .36);
+      /* ── Accent: Deep Blue → Teal-Blue (STLAF brand) ── */
+      --blue: #5f98b6;
+      --indigo: #365794;
+      --accent-gradient: linear-gradient(135deg, #365794 0%, #5f98b6 100%);
+      --accent-glow: rgba(54, 87, 148, .32);
+      --blue-dim: rgba(95, 152, 182, .14);
+      --blue-line: rgba(95, 152, 182, .38);
 
       /* ── Semantic colors ── */
       --green: #22c55e;
       --green-dim: rgba(34, 197, 94, .13);
-      --amber: #f59e0b;
-      --amber-dim: rgba(245, 158, 11, .13);
+      --amber: #ebd47a;
+      --amber-dim: rgba(235, 212, 122, .16);
       --red: #ef4444;
       --red-dim: rgba(239, 68, 68, .13);
-      --purple: #a855f7;
-      --purple-dim: rgba(168, 85, 247, .13);
+      --purple: #6492b1;
+      --purple-dim: rgba(100, 146, 177, .15);
 
       /* ── Neumorphic shadows (dark) ── */
       --neu: -4px -4px 9px rgba(255, 255, 255, .028), 5px 5px 14px rgba(0, 0, 0, .58);
@@ -62,24 +63,24 @@
     }
 
     body.light {
-      --bg: #eaedf4;
-      --bg-sidebar: #e2e6f0;
-      --bg-card: #eaedf4;
-      --bg-card-hover: #f0f3fa;
-      --bg-input: #e2e6f0;
-      --border: #d0d4e8;
-      --border-soft: #d8dcec;
-      --text: #14142a;
-      --text-dim: #5e5e7c;
-      --text-faint: #9494b0;
-      --blue-dim: rgba(99, 102, 241, .10);
+      --bg: #eaeef4;
+      --bg-sidebar: #e1e7f0;
+      --bg-card: #eaeef4;
+      --bg-card-hover: #f1f4fa;
+      --bg-input: #e1e7f0;
+      --border: #ccd6e6;
+      --border-soft: #d6dfec;
+      --text: #101a2c;
+      --text-dim: #556074;
+      --text-faint: #97a1b3;
+      --blue-dim: rgba(54, 87, 148, .10);
       --green-dim: rgba(34, 197, 94, .10);
-      --amber-dim: rgba(245, 158, 11, .10);
+      --amber-dim: rgba(235, 212, 122, .24);
       --red-dim: rgba(239, 68, 68, .10);
-      --purple-dim: rgba(168, 85, 247, .10);
-      --neu: -3px -3px 7px rgba(255, 255, 255, .75), 4px 4px 10px rgba(155, 160, 210, .28);
-      --neu-sm: -2px -2px 4px rgba(255, 255, 255, .65), 3px 3px 7px rgba(155, 160, 210, .22);
-      --neu-inset: inset -2px -2px 5px rgba(255, 255, 255, .7), inset 3px 3px 7px rgba(155, 160, 210, .25);
+      --purple-dim: rgba(100, 146, 177, .13);
+      --neu: -3px -3px 7px rgba(255, 255, 255, .75), 4px 4px 10px rgba(150, 164, 200, .28);
+      --neu-sm: -2px -2px 4px rgba(255, 255, 255, .65), 3px 3px 7px rgba(150, 164, 200, .22);
+      --neu-inset: inset -2px -2px 5px rgba(255, 255, 255, .7), inset 3px 3px 7px rgba(150, 164, 200, .25);
       --shadow: var(--neu);
     }
 
@@ -138,8 +139,8 @@
       padding: 20px;
       background: var(--bg);
       background-image:
-        radial-gradient(ellipse 60% 50% at 15% 10%, rgba(99, 102, 241, .09) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 85% 90%, rgba(59, 130, 246, .09) 0%, transparent 60%);
+        radial-gradient(ellipse 60% 50% at 15% 10%, rgba(54, 87, 148, .11) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 85% 90%, rgba(95, 152, 182, .11) 0%, transparent 60%);
     }
 
     .login-card {
@@ -263,7 +264,7 @@
     input:focus,
     textarea:focus {
       border-color: var(--indigo);
-      box-shadow: var(--neu-inset), 0 0 0 3px rgba(99, 102, 241, .13);
+      box-shadow: var(--neu-inset), 0 0 0 3px rgba(54, 87, 148, .16);
     }
 
     /* ── BUTTONS ────────────────────────────────────────────────────── */
