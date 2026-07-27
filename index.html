@@ -1225,6 +1225,24 @@
       background: var(--border);
     }
 
+    /* ── LOGIN MODE SWITCH LINK ─────────────────────────────────────── */
+    .login-switch {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 12.5px;
+      color: var(--text-dim);
+    }
+
+    .login-switch button {
+      background: none;
+      border: none;
+      color: var(--indigo);
+      font-weight: 700;
+      font-size: 12.5px;
+      padding: 0;
+      text-decoration: underline;
+    }
+
     /* ── RESPONSIVE ─────────────────────────────────────────────────── */
     @media(max-width:880px) {
       .sidebar {
@@ -1311,10 +1329,6 @@
     function icon(name, extra = '') { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" ${extra}>${ICN[name] || ''}</svg>`; }
 
     /* ============================= AUTH HELPERS ============================= */
-    /**
-     * Fetch the authenticated user's profile row from public.profiles.
-     * Returns null if not authenticated or no matching profile.
-     */
     async function fetchProfile() {
       const { data: { user } } = await window.db.auth.getUser();
       if (!user) return null;
@@ -1327,16 +1341,9 @@
       return data;   // { id, full_name, role }
     }
 
-    /**
-     * After a Google OAuth sign-in the user may not have a profile row yet
-     * (first login). Create one with role='intern' so the app can continue.
-     * The supervisor must already have a profile row (created manually or via
-     * the Supabase dashboard).
-     */
     async function ensureProfile(supabaseUser, fullName) {
       const existing = await fetchProfile();
       if (existing) return existing;
-      // First-time Google sign-in → create a default 'intern' profile
       const name = fullName
         || supabaseUser.user_metadata?.full_name
         || supabaseUser.email?.split('@')[0]
@@ -1355,13 +1362,13 @@
 
     /* ============================= STATE ============================= */
     const state = {
-      user: null,            // {id, name, role}
+      user: null,
       interns: [],
-      internDepts: {},       // { internName: 'IT' | 'Marketing' | 'Litigations' }
+      internDepts: {},
       tasks: [],
       view: 'dashboard',
       dateSel: todayStr(),
-      deptFilter: '',        // '' = All departments
+      deptFilter: '',
       logInternSel: null,
       draft: null,
       taskFilter: 'all',
@@ -1441,8 +1448,6 @@
     }
 
     /* ============================= INTERN SYNC (Supabase: interns table) ============================= */
-    // NOTE: password is intentionally NOT selected here — it's only fetched
-    // during the login check, and never kept in app state or the roster list.
     async function loadInterns() {
       try {
         const { data, error } = await window.db
@@ -1525,7 +1530,6 @@
       if (error) { console.error('Failed to save daily log', error); return false; }
       return true;
     }
-    // Batch-fetch every daily log for a given date (used by the dashboard)
     async function getDailyLogsForDate(dateStr, names) {
       let query = window.db.from('daily_logs').select('*').eq('log_date', dateStr);
       if (names && names.length) query = query.in('intern_name', names);
@@ -1536,22 +1540,15 @@
 
     /* ============================= BOOT ============================= */
     async function boot() {
-      // Fetch fresh interns from Supabase on startup
       await loadInterns();
-
-      // Let Supabase restore any persisted session from localStorage first.
-      // getSession() is sync-fast when the JWT is still valid.
       const { data: { session } } = await window.db.auth.getSession();
 
       if (session) {
-        // There is a live Supabase session — use it directly.
         await handleSession(session);
       } else {
-        // No active session → show login.
         showLogin();
       }
 
-      // React to future auth events (OAuth callback, token refresh, sign-out)
       window.db.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_IN' && session) {
           await handleSession(session);
@@ -1559,20 +1556,15 @@
           state.user = null;
           showLogin();
         } else if (event === 'TOKEN_REFRESHED' && session) {
-          // Token was silently refreshed — nothing to do, session remains valid.
+          // no-op
         }
       });
     }
 
-    /**
-     * Called whenever we have a confirmed Supabase session.
-     * Resolves the profile row and then bootstraps the app.
-     */
     async function handleSession(session) {
       await loadInterns();
       const profile = await fetchProfile();
       if (!profile) {
-        // Could be a first-time Google sign-in; try to create a profile row.
         const created = await ensureProfile(session.user);
         if (!created) {
           toast('Could not load your profile. Contact an administrator.', true);
@@ -1597,6 +1589,7 @@
 
     /* ============================= LOGIN SCREEN ============================= */
     let loginRole = 'intern';
+    let internLoginMode = 'existing'; // 'existing' | 'new'
 
     function showLogin() {
       document.getElementById('appShell').style.display = 'none';
@@ -1620,35 +1613,47 @@
     }
 
     function renderInternLogin() {
-      // No Google OAuth for interns — name + password only.
-      const opts = state.interns.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
-      const deptOpts = DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
-      return `
+      if (internLoginMode === 'existing') {
+        const opts = state.interns.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+        return `
     <form data-action="login-intern">
       <div class="field">
         <label class="field-label">Select your name</label>
-        <select name="existing" id="internSelect">
+        <select name="existing" id="internSelect" required>
           <option value="">— Select your name —</option>
           ${opts}
         </select>
       </div>
-      <div class="hint" style="margin-bottom:6px">Not on the list? Register below:</div>
       <div class="field">
-        <input type="text" name="newName" placeholder="Type your full name to register">
+        <label class="field-label">Password</label>
+        <input type="password" name="password" id="internPw" placeholder="Enter your password" required>
       </div>
-      <div class="field" id="deptField" style="display:none">
+      <button class="btn btn-primary btn-full" type="submit">${icon('arrow')} Continue as Intern</button>
+      <div class="login-switch">Not on the list? <button type="button" data-action="set-intern-login-mode" data-mode="new">Register here</button></div>
+    </form>
+  `;
+      }
+
+      const deptOpts = DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
+      return `
+    <form data-action="register-intern">
+      <div class="field">
+        <label class="field-label">Full Name</label>
+        <input type="text" name="newName" placeholder="Type your full name" required>
+      </div>
+      <div class="field">
         <label class="field-label">Department</label>
-        <select name="department">
+        <select name="department" required>
           <option value="">— Select your department —</option>
           ${deptOpts}
         </select>
       </div>
       <div class="field">
-        <label class="field-label" id="pwLabel">Password</label>
-        <input type="password" name="password" id="internPw" placeholder="Enter your password" required>
+        <label class="field-label">Create a Password</label>
+        <input type="password" name="password" placeholder="Create a password" required>
       </div>
-      <div class="hint" id="pwHint" style="margin-top:-6px;margin-bottom:8px">Returning intern: enter your existing password. New intern: create a password for your account.</div>
-      <button class="btn btn-primary btn-full" type="submit">${icon('arrow')} Continue as Intern</button>
+      <button class="btn btn-primary btn-full" type="submit">${icon('arrow')} Register &amp; Continue</button>
+      <div class="login-switch">Already registered? <button type="button" data-action="set-intern-login-mode" data-mode="existing">Select your name</button></div>
     </form>
   `;
     }
@@ -1656,7 +1661,6 @@
 
     function renderSupervisorLogin() {
       return `
-    <!-- Google sign-in (primary) -->
     <button class="btn btn-google btn-full" style="margin-bottom:0" data-action="login-google">
       <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
       Continue with Google
@@ -1668,17 +1672,12 @@
     function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
     /* ============================= LOGIN EVENTS ============================= */
-    // Show dept field when user types a new name
-    document.getElementById('loginScreen').addEventListener('input', e => {
-      if (e.target.name === 'newName') {
-        const deptField = document.getElementById('deptField');
-        if (deptField) deptField.style.display = e.target.value.trim() ? 'block' : 'none';
-      }
-    });
-
     document.getElementById('loginScreen').addEventListener('click', e => {
       const roleBtn = e.target.closest('[data-action="set-login-role"]');
-      if (roleBtn) { loginRole = roleBtn.dataset.role; showLogin(); }
+      if (roleBtn) { loginRole = roleBtn.dataset.role; internLoginMode = 'existing'; showLogin(); }
+
+      const modeBtn = e.target.closest('[data-action="set-intern-login-mode"]');
+      if (modeBtn) { internLoginMode = modeBtn.dataset.mode; showLogin(); }
 
       const googleBtn = e.target.closest('[data-action="login-google"]');
       if (googleBtn) loginWithGoogle();
@@ -1689,72 +1688,67 @@
       const form = e.target;
 
       if (form.dataset.action === 'login-intern') {
-        const existing = form.existing.value;
-        const newName = form.newName.value.trim();
+        const name = form.existing.value;
         const password = form.password.value;
-        const deptSel = form.department ? form.department.value : '';
-
-        // Must provide either a selected name or a typed name
-        let name = existing || newName;
-        if (!name) { toast('Please select your name or type a new one.', true); return; }
+        if (!name) { toast('Please select your name.', true); return; }
         if (!password) { toast('Please enter your password.', true); return; }
 
-        if (existing && !newName) {
-          // ── Returning intern: verify password stored in the interns table ──
-          const { data: row, error: fetchErr } = await window.db
-            .from('interns').select('password').eq('name', existing).maybeSingle();
-          if (fetchErr) { toast('Could not verify your account. Try again.', true); return; }
-          if (!row || !row.password) {
-            // First time logging in with a name that was added by a supervisor
-            // (no password set yet) → treat this login as the password-setup step.
-            const { error: setErr } = await window.db.from('interns').update({ password }).eq('name', existing);
-            if (setErr) { toast('Could not set your password.', true); return; }
-            toast('Password set for your account. Welcome!');
-          } else if (row.password !== password) {
-            toast('Incorrect password. Try again.', true);
-            return;
-          }
-          name = existing;
-        } else {
-          // ── New intern: register name + password + department ──────────
-          if (!newName) { toast('Please type your full name to register.', true); return; }
-          if (!deptSel) { toast('Please select your department.', true); return; }
-          if (state.interns.includes(newName)) {
-            // Name already exists — verify password instead
-            const { data: row, error: fetchErr } = await window.db
-              .from('interns').select('password').eq('name', newName).maybeSingle();
-            if (fetchErr) { toast('Could not verify your account. Try again.', true); return; }
-            if (row && row.password && row.password !== password) {
-              toast('That name already exists. Wrong password.', true);
-              return;
-            }
-            if (row && !row.password) {
-              // Name exists but no password yet — set it now
-              await window.db.from('interns').update({ password }).eq('name', newName);
-            }
-          } else {
-            // Brand-new intern: insert into the interns table
-            const { error: insErr } = await window.db
-              .from('interns').insert({ name: newName, department: deptSel, password });
-            if (insErr) { toast('Could not create your account.', true); return; }
-            state.interns.push(newName);
-            state.internDepts[newName] = deptSel;
-            toast('Account created. Welcome, ' + newName + '!');
-          }
-          name = newName;
+        const { data: row, error: fetchErr } = await window.db
+          .from('interns').select('password').eq('name', name).maybeSingle();
+        if (fetchErr) { toast('Could not verify your account. Try again.', true); return; }
+        if (!row || !row.password) {
+          const { error: setErr } = await window.db.from('interns').update({ password }).eq('name', name);
+          if (setErr) { toast('Could not set your password.', true); return; }
+          toast('Password set for your account. Welcome!');
+        } else if (row.password !== password) {
+          toast('Incorrect password. Try again.', true);
+          return;
         }
 
         state.user = { id: null, name, role: 'intern' };
         state.logInternSel = name;
         await loadTasks();
         showApp();
+        return;
+      }
 
+      if (form.dataset.action === 'register-intern') {
+        const newName = form.newName.value.trim();
+        const password = form.password.value;
+        const deptSel = form.department.value;
+        if (!newName) { toast('Please type your full name to register.', true); return; }
+        if (!deptSel) { toast('Please select your department.', true); return; }
+        if (!password) { toast('Please create a password.', true); return; }
+
+        if (state.interns.includes(newName)) {
+          const { data: row, error: fetchErr } = await window.db
+            .from('interns').select('password').eq('name', newName).maybeSingle();
+          if (fetchErr) { toast('Could not verify your account. Try again.', true); return; }
+          if (row && row.password && row.password !== password) {
+            toast('That name already exists. Wrong password.', true);
+            return;
+          }
+          if (row && !row.password) {
+            await window.db.from('interns').update({ password }).eq('name', newName);
+          }
+        } else {
+          const { error: insErr } = await window.db
+            .from('interns').insert({ name: newName, department: deptSel, password });
+          if (insErr) { toast('Could not create your account.', true); return; }
+          state.interns.push(newName);
+          state.internDepts[newName] = deptSel;
+          toast('Account created. Welcome, ' + newName + '!');
+        }
+
+        state.user = { id: null, name: newName, role: 'intern' };
+        state.logInternSel = newName;
+        await loadTasks();
+        showApp();
+        return;
       }
     });
 
     async function loginWithGoogle() {
-      // redirectTo must match an entry in Supabase → Auth → Redirect URLs.
-      // For a local HTML file use the file's full URL; for a hosted app use its origin.
       const redirectTo = window.location.href.split('?')[0].split('#')[0];
       const { error } = await window.db.auth.signInWithOAuth({
         provider: 'google',
@@ -1764,7 +1758,6 @@
         },
       });
       if (error) toast(error.message || 'Google sign-in failed', true);
-      // Supabase redirects the browser to Google; on return it fires onAuthStateChange.
     }
 
     /* ============================= APP SHELL ============================= */
@@ -1921,12 +1914,10 @@
     }
 
     async function renderSupervisorDailyLog(container) {
-      // Build dept options
       const deptOpts = ['', ...DEPARTMENTS].map(d =>
         `<option value="${d}" ${state.deptFilter === d ? 'selected' : ''}>${d || 'All Departments'}</option>`
       ).join('');
 
-      // Filter interns by selected department ('' = show all)
       const filteredInterns = state.deptFilter
         ? state.interns.filter(n => state.internDepts[n] === state.deptFilter)
         : state.interns;
@@ -1956,12 +1947,10 @@
       document.getElementById('dlDate').addEventListener('change', e => { state.dateSel = e.target.value; renderSupervisorDailyLogBody(); });
       document.getElementById('dlDept').addEventListener('change', e => {
         state.deptFilter = e.target.value;
-        // Re-filter interns and reset selection
         const fi = state.deptFilter
           ? state.interns.filter(n => state.internDepts[n] === state.deptFilter)
           : state.interns;
         state.logInternSel = fi[0] || null;
-        // Rebuild intern dropdown
         const sel = document.getElementById('dlIntern');
         sel.innerHTML = '<option value="">— Select intern —</option>' +
           fi.map(n => `<option value="${escapeHtml(n)}" ${state.logInternSel === n ? 'selected' : ''}>${escapeHtml(n)}</option>`).join('');
@@ -2231,25 +2220,19 @@
 
     /* ============================= GLOBAL EVENT DELEGATION ============================= */
     document.addEventListener('click', async e => {
-      // nav
       const navBtn = e.target.closest('[data-action="nav"]');
       if (navBtn) { navigate(navBtn.dataset.view); return; }
 
-      // theme
       if (e.target.closest('[data-action="toggle-theme"]')) { document.body.classList.toggle('light'); return; }
 
-      // logout — properly signs out from Supabase then shows login
       if (e.target.closest('[data-action="logout"]')) {
-        await window.db.auth.signOut();   // clears Supabase JWT from localStorage
+        await window.db.auth.signOut();
         state.user = null;
         state.tasks = [];
-        // onAuthStateChange fires SIGNED_OUT → showLogin() is called there too,
-        // but we do it proactively for zero-flash UX.
         showLogin();
         return;
       }
 
-      // modal actions
       if (e.target.closest('[data-action="close-modal"]')) { closeModal(); return; }
       if (e.target.closest('[data-action="open-assign-modal"]')) { openAssignModal(); return; }
       if (e.target.closest('[data-action="open-add-intern"]')) { openAddInternModal(); return; }
@@ -2257,7 +2240,6 @@
       const completeBtn = e.target.closest('[data-action="open-complete-modal"]');
       if (completeBtn) { openCompleteModal(completeBtn.dataset.id); return; }
 
-      // delete task
       const delBtn = e.target.closest('[data-action="delete-task"]');
       if (delBtn) {
         const { error } = await window.db.from('tasks').delete().eq('id', delBtn.dataset.id);
@@ -2268,7 +2250,6 @@
         return;
       }
 
-      // remove intern
       const remBtn = e.target.closest('[data-action="remove-intern"]');
       if (remBtn) {
         const { error } = await window.db.from('interns').delete().eq('name', remBtn.dataset.name);
@@ -2279,7 +2260,6 @@
         return;
       }
 
-      // daily log mode toggle
       const modeBtn = e.target.closest('[data-action="set-mode"]');
       if (modeBtn) {
         const { key, mode } = modeBtn.dataset;
@@ -2287,11 +2267,9 @@
         renderDraft(); return;
       }
 
-      // remove photo
       const rmPhoto = e.target.closest('[data-action="remove-photo"]');
       if (rmPhoto) { state.draft[rmPhoto.dataset.key].photo = null; renderDraft(); return; }
 
-      // quick remark
       const qb = e.target.closest('[data-action="quick-remark"]');
       if (qb) {
         state.draft[qb.dataset.key].remark = qb.dataset.text;
@@ -2300,7 +2278,6 @@
         return;
       }
 
-      // infographic checkbox
       const checkRow = e.target.closest('[data-action="toggle-check"]');
       if (checkRow) {
         const k = checkRow.dataset.key;
@@ -2308,12 +2285,9 @@
         renderDraft(); return;
       }
 
-      // reset draft
       if (e.target.closest('[data-action="reset-draft"]')) { state.draft = newDailyDraft(); renderDraft(); return; }
 
-      // save daily log
       if (e.target.closest('[data-action="save-daily"]')) {
-        // sync textarea content into state before saving
         document.querySelectorAll('[data-bind]').forEach(el => {
           const [k, f] = el.dataset.bind.split('.');
           if (state.draft[k]) state.draft[k][f] = el.value;
@@ -2326,7 +2300,6 @@
         return;
       }
 
-      // task filter
       const filterBtn = e.target.closest('[data-action="set-task-filter"]');
       if (filterBtn) {
         state.taskFilter = filterBtn.dataset.f;
