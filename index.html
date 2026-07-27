@@ -5,6 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Intern Tracker · IT Department</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#365794">
+  <link rel="icon" type="image/png" href="icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -12,43 +15,42 @@
     rel="stylesheet">
   <style>
     /* ═══════════════════════════════════════════════════════════════
-     INTERN TRACKER — Neumorphic Dark · STLAF Brand Palette
-     Font: Geist (SaaS/dev) · Accent: #365794 → #5F98B6 (deep blue → teal-blue)
-     Slate: #3E5E72 · Gold highlight: #EBD47A
+     INTERN TRACKER — Neumorphic Dark · Indigo→Blue Gradient
+     Font: Geist (SaaS/dev) · Accent: #6366f1 → #3b82f6
   ═══════════════════════════════════════════════════════════════ */
 
     :root {
       /* ── Surfaces ── */
-      --bg: #0a0e14;
-      --bg-sidebar: #080b10;
-      --bg-card: #111823;
-      --bg-card-hover: #161f2c;
-      --bg-input: #0a0e14;
-      --border: #212c3d;
-      --border-soft: #19222f;
+      --bg: #111118;
+      --bg-sidebar: #0e0e15;
+      --bg-card: #16161f;
+      --bg-card-hover: #1b1b27;
+      --bg-input: #111118;
+      --border: #252535;
+      --border-soft: #1d1d2c;
 
       /* ── Typography ── */
-      --text: #e4e9f2;
-      --text-dim: #8592a8;
-      --text-faint: #4b5670;
+      --text: #e4e4f0;
+      --text-dim: #8686a4;
+      --text-faint: #4e4e6a;
 
-      /* ── Accent: Deep Blue → Teal-Blue (STLAF brand) ── */
-      --blue: #5f98b6;
-      --indigo: #365794;
-      --accent-gradient: linear-gradient(135deg, #365794 0%, #5f98b6 100%);
-      --accent-glow: rgba(54, 87, 148, .32);
-      --blue-dim: rgba(95, 152, 182, .14);
-      --blue-line: rgba(95, 152, 182, .38);
+      /* ── Accent: Indigo → Blue ── */
+      --blue: #3b82f6;
+      --indigo: #6366f1;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+      --accent-glow: rgba(99, 102, 241, .28);
+      --blue-dim: rgba(99, 102, 241, .12);
+      --blue-line: rgba(99, 102, 241, .36);
 
       /* ── Semantic colors ── */
       --green: #22c55e;
       --green-dim: rgba(34, 197, 94, .13);
-      --amber: #ebd47a;
-      --amber-dim: rgba(235, 212, 122, .16);
+      --amber: #f59e0b;
+      --amber-dim: rgba(245, 158, 11, .13);
       --red: #ef4444;
       --red-dim: rgba(239, 68, 68, .13);
-      --purple: #6492b1;
-      --purple-dim: rgba(100, 146, 177, .15);
+      --purple: #a855f7;
+      --purple-dim: rgba(168, 85, 247, .13);
 
       /* ── Neumorphic shadows (dark) ── */
       --neu: -4px -4px 9px rgba(255, 255, 255, .028), 5px 5px 14px rgba(0, 0, 0, .58);
@@ -63,24 +65,24 @@
     }
 
     body.light {
-      --bg: #eaeef4;
-      --bg-sidebar: #e1e7f0;
-      --bg-card: #eaeef4;
-      --bg-card-hover: #f1f4fa;
-      --bg-input: #e1e7f0;
-      --border: #ccd6e6;
-      --border-soft: #d6dfec;
-      --text: #101a2c;
-      --text-dim: #556074;
-      --text-faint: #97a1b3;
-      --blue-dim: rgba(54, 87, 148, .10);
+      --bg: #eaedf4;
+      --bg-sidebar: #e2e6f0;
+      --bg-card: #eaedf4;
+      --bg-card-hover: #f0f3fa;
+      --bg-input: #e2e6f0;
+      --border: #d0d4e8;
+      --border-soft: #d8dcec;
+      --text: #14142a;
+      --text-dim: #5e5e7c;
+      --text-faint: #9494b0;
+      --blue-dim: rgba(99, 102, 241, .10);
       --green-dim: rgba(34, 197, 94, .10);
-      --amber-dim: rgba(235, 212, 122, .24);
+      --amber-dim: rgba(245, 158, 11, .10);
       --red-dim: rgba(239, 68, 68, .10);
-      --purple-dim: rgba(100, 146, 177, .13);
-      --neu: -3px -3px 7px rgba(255, 255, 255, .75), 4px 4px 10px rgba(150, 164, 200, .28);
-      --neu-sm: -2px -2px 4px rgba(255, 255, 255, .65), 3px 3px 7px rgba(150, 164, 200, .22);
-      --neu-inset: inset -2px -2px 5px rgba(255, 255, 255, .7), inset 3px 3px 7px rgba(150, 164, 200, .25);
+      --purple-dim: rgba(168, 85, 247, .10);
+      --neu: -3px -3px 7px rgba(255, 255, 255, .75), 4px 4px 10px rgba(155, 160, 210, .28);
+      --neu-sm: -2px -2px 4px rgba(255, 255, 255, .65), 3px 3px 7px rgba(155, 160, 210, .22);
+      --neu-inset: inset -2px -2px 5px rgba(255, 255, 255, .7), inset 3px 3px 7px rgba(155, 160, 210, .25);
       --shadow: var(--neu);
     }
 
@@ -137,19 +139,74 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      background: var(--bg);
-      background-image:
-        radial-gradient(ellipse 60% 50% at 15% 10%, rgba(54, 87, 148, .11) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 85% 90%, rgba(95, 152, 182, .11) 0%, transparent 60%);
+      background: #1e272e;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-bg-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .login-bg-logo {
+      position: absolute;
+      inset: 0;
+      background: url('stlaf-logo.png') center center / min(680px, 88vw) auto no-repeat;
+      opacity: 0.28;
+      filter: drop-shadow(0 0 48px rgba(196, 162, 77, 0.18));
+    }
+
+    .login-bg-glow {
+      position: absolute;
+      top: -10%;
+      left: -55%;
+      width: 55%;
+      height: 120%;
+      background: linear-gradient(90deg,
+          transparent 0%,
+          rgba(196, 162, 77, 0.06) 25%,
+          rgba(196, 162, 77, 0.42) 48%,
+          rgba(255, 255, 255, 0.18) 50%,
+          rgba(196, 162, 77, 0.42) 52%,
+          rgba(196, 162, 77, 0.06) 75%,
+          transparent 100%);
+      animation: loginGlowSweep 4.5s ease-in-out infinite;
+      mix-blend-mode: screen;
+      filter: blur(8px);
+    }
+
+    .login-bg-glow-2 {
+      width: 35%;
+      opacity: 0.55;
+      animation-delay: 2.25s;
+      filter: blur(14px);
+    }
+
+    @keyframes loginGlowSweep {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(calc(100vw + 110%));
+      }
     }
 
     .login-card {
+      position: relative;
+      z-index: 1;
       width: 100%;
       max-width: 420px;
-      background: var(--bg-card);
+      background: rgba(22, 22, 31, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(196, 162, 77, 0.14);
       border-radius: 24px;
       padding: 38px 34px;
-      box-shadow: var(--neu);
+      box-shadow: var(--neu), 0 0 60px rgba(196, 162, 77, 0.06);
     }
 
     .login-logo {
@@ -264,7 +321,7 @@
     input:focus,
     textarea:focus {
       border-color: var(--indigo);
-      box-shadow: var(--neu-inset), 0 0 0 3px rgba(54, 87, 148, .16);
+      box-shadow: var(--neu-inset), 0 0 0 3px rgba(99, 102, 241, .13);
     }
 
     /* ── BUTTONS ────────────────────────────────────────────────────── */
@@ -1225,24 +1282,6 @@
       background: var(--border);
     }
 
-    /* ── LOGIN MODE SWITCH LINK ─────────────────────────────────────── */
-    .login-switch {
-      text-align: center;
-      margin-top: 14px;
-      font-size: 12.5px;
-      color: var(--text-dim);
-    }
-
-    .login-switch button {
-      background: none;
-      border: none;
-      color: var(--indigo);
-      font-weight: 700;
-      font-size: 12.5px;
-      padding: 0;
-      text-decoration: underline;
-    }
-
     /* ── RESPONSIVE ─────────────────────────────────────────────────── */
     @media(max-width:880px) {
       .sidebar {
@@ -1278,7 +1317,14 @@
 
 <body>
 
-  <div id="loginScreen"></div>
+  <div id="loginScreen">
+    <div class="login-bg-layer" aria-hidden="true">
+      <div class="login-bg-logo"></div>
+      <div class="login-bg-glow"></div>
+      <div class="login-bg-glow login-bg-glow-2"></div>
+    </div>
+    <div id="loginCard"></div>
+  </div>
   <div id="appShell" style="display:none">
     <div class="app-shell">
       <aside class="sidebar" id="sidebar"></aside>
@@ -1294,7 +1340,7 @@
   <script>
     // ─── Supabase client ───────────────────────────────────────────────────────
     const SUPABASE_URL = 'https://xnlnhqjnzgsspgqvugic.supabase.co';
-    const SUPABASE_ANON = 'sb_publishable_fVV1OQymZdiDdsxzuceahA_pzNBZbAy';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhubG5ocWpuemdzc3BncXZ1Z2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNzcxNzUsImV4cCI6MjA5OTY1MzE3NX0.LgJcHgp-cy94WlihYyDz6gTuXdbHaO-hx7nfT5jjDmc';
     window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
       auth: {
         persistSession: true,        // keep JWT in localStorage across refreshes
@@ -1328,7 +1374,48 @@
     };
     function icon(name, extra = '') { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" ${extra}>${ICN[name] || ''}</svg>`; }
 
+    /* ============================= STORAGE HELPERS ============================= */
+    // NOTE: All daily-log/task data still lives in the browser localStorage layer
+    // (unchanged from original). Only auth state is now driven by Supabase session.
+    function browserStorageKey(key, shared) {
+      return `intern-tracker:${shared ? 'shared' : 'local'}:${key}`;
+    }
+    async function sGet(key, shared = true) {
+      try {
+        if (window.storage && typeof window.storage.get === 'function') {
+          const r = await window.storage.get(key, shared);
+          if (r) return JSON.parse(r.value);
+        }
+      } catch (e) { console.warn('Preview storage unavailable; using browser storage.', e); }
+      try {
+        const value = localStorage.getItem(browserStorageKey(key, shared));
+        return value ? JSON.parse(value) : null;
+      } catch (e) { return null; }
+    }
+    async function sSet(key, val, shared = true) {
+      try {
+        if (window.storage && typeof window.storage.set === 'function') {
+          const r = await window.storage.set(key, JSON.stringify(val), shared);
+          if (r) return true;
+        }
+      } catch (e) { console.warn('Preview storage unavailable; using browser storage.', e); }
+      try {
+        localStorage.setItem(browserStorageKey(key, shared), JSON.stringify(val));
+        return true;
+      } catch (e) { console.error('storage set failed', e); return false; }
+    }
+    async function sDel(key, shared = true) {
+      try {
+        if (window.storage && typeof window.storage.delete === 'function') await window.storage.delete(key, shared);
+      } catch (e) { }
+      try { localStorage.removeItem(browserStorageKey(key, shared)); } catch (e) { }
+    }
+
     /* ============================= AUTH HELPERS ============================= */
+    /**
+     * Fetch the authenticated user's profile row from public.profiles.
+     * Returns null if not authenticated or no matching profile.
+     */
     async function fetchProfile() {
       const { data: { user } } = await window.db.auth.getUser();
       if (!user) return null;
@@ -1341,9 +1428,16 @@
       return data;   // { id, full_name, role }
     }
 
+    /**
+     * After a Google OAuth sign-in the user may not have a profile row yet
+     * (first login). Create one with role='intern' so the app can continue.
+     * The supervisor must already have a profile row (created manually or via
+     * the Supabase dashboard).
+     */
     async function ensureProfile(supabaseUser, fullName) {
       const existing = await fetchProfile();
       if (existing) return existing;
+      // First-time Google sign-in → create a default 'intern' profile
       const name = fullName
         || supabaseUser.user_metadata?.full_name
         || supabaseUser.email?.split('@')[0]
@@ -1362,13 +1456,13 @@
 
     /* ============================= STATE ============================= */
     const state = {
-      user: null,
+      user: null,            // {id, name, role}
       interns: [],
-      internDepts: {},
+      internDepts: {},       // { internName: 'IT' | 'Marketing' | 'Litigations' }
       tasks: [],
       view: 'dashboard',
       dateSel: todayStr(),
-      deptFilter: '',
+      deptFilter: '',        // '' = All departments
       logInternSel: null,
       draft: null,
       taskFilter: 'all',
@@ -1447,162 +1541,91 @@
       });
     }
 
-    /* ============================= INTERN SYNC (Supabase: interns table) ============================= */
+    /* ============================= INTERN SYNC ============================= */
     async function loadInterns() {
       try {
         const { data, error } = await window.db
           .from('interns')
-          .select('name, department')
-          .order('name', { ascending: true });
+          .select('name, department');
         if (!error && data) {
           state.interns = data.map(i => i.name);
           state.internDepts = {};
-          data.forEach(i => { state.internDepts[i.name] = i.department; });
-        } else if (error) {
-          console.warn('Failed to load interns from Supabase', error);
+          data.forEach(i => {
+            state.internDepts[i.name] = i.department;
+          });
+          await sSet('interns', state.interns, true);
+          await sSet('internDepts', state.internDepts, true);
         }
       } catch (e) {
-        console.warn('Failed to load interns from Supabase', e);
+        console.warn('Failed to sync interns from Supabase', e);
       }
-    }
-
-    /* ============================= TASKS SYNC (Supabase: tasks table) ============================= */
-    async function loadTasks() {
-      try {
-        let query = window.db.from('tasks').select('*').order('created_at', { ascending: false });
-        if (state.user.role !== 'supervisor') query = query.eq('intern_name', state.user.name);
-        const { data, error } = await query;
-        if (!error && data) {
-          state.tasks = data.map(rowToTask);
-        } else if (error) {
-          console.warn('Failed to load tasks from Supabase', error);
-        }
-      } catch (e) {
-        console.warn('Failed to load tasks from Supabase', e);
-      }
-    }
-    function rowToTask(row) {
-      return {
-        id: row.id,
-        intern: row.intern_name,
-        title: row.title,
-        description: row.description || '',
-        dueDate: row.due_date,
-        status: row.status,
-        proofRemark: row.proof_remark,
-        proofPhoto: row.proof_photo,
-        completedAt: row.completed_at,
-        createdAt: row.created_at ? new Date(row.created_at).getTime() : 0,
-      };
-    }
-
-    /* ============================= DAILY LOGS SYNC (Supabase: daily_logs table) ============================= */
-    function rowToDaily(row) {
-      if (!row) return null;
-      return {
-        ticketing: row.ticketing || { mode: null, remark: '', photo: null },
-        email: row.email || { mode: null, remark: '', photo: null },
-        infographic: row.infographic || { items: { review: false, design: false, upload: false } },
-        completedAt: row.completed_at,
-      };
-    }
-    async function getDailyLog(internName, dateStr) {
-      const { data, error } = await window.db
-        .from('daily_logs')
-        .select('*')
-        .eq('intern_name', internName)
-        .eq('log_date', dateStr)
-        .maybeSingle();
-      if (error) { console.warn('Failed to load daily log', error); return null; }
-      return rowToDaily(data);
-    }
-    async function saveDailyLog(internName, dateStr, draft) {
-      const { error } = await window.db
-        .from('daily_logs')
-        .upsert({
-          intern_name: internName,
-          log_date: dateStr,
-          ticketing: draft.ticketing,
-          email: draft.email,
-          infographic: draft.infographic,
-          completed_at: draft.completedAt,
-        }, { onConflict: 'intern_name,log_date' });
-      if (error) { console.error('Failed to save daily log', error); return false; }
-      return true;
-    }
-    async function getDailyLogsForDate(dateStr, names) {
-      let query = window.db.from('daily_logs').select('*').eq('log_date', dateStr);
-      if (names && names.length) query = query.in('intern_name', names);
-      const { data, error } = await query;
-      if (error) { console.warn('Failed to load daily logs for date', error); return []; }
-      return data.map(row => ({ name: row.intern_name, e: rowToDaily(row) }));
     }
 
     /* ============================= BOOT ============================= */
     async function boot() {
+      state.interns = (await sGet('interns', true)) || [];
+      state.internDepts = (await sGet('internDepts', true)) || {};
+      state.tasks = (await sGet('tasks', true)) || [];
+
+      // Fetch fresh interns from Supabase on startup
       await loadInterns();
+
+      // Let Supabase restore any persisted session from localStorage first.
+      // getSession() is sync-fast when the JWT is still valid.
       const { data: { session } } = await window.db.auth.getSession();
 
       if (session) {
+        // There is a live Supabase session — use it directly.
         await handleSession(session);
       } else {
+        // No active session → show login.
         showLogin();
       }
 
+      // React to future auth events (OAuth callback, token refresh, sign-out)
       window.db.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_IN' && session) {
           await handleSession(session);
         } else if (event === 'SIGNED_OUT') {
           state.user = null;
           showLogin();
-        } else if (event === 'TOKEN_REFRESHED' && session) {
-          // no-op
         }
       });
     }
 
-    async function handleSession(session) {
-      await loadInterns();
-      const profile = await fetchProfile();
-      if (!profile) {
-        const created = await ensureProfile(session.user);
-        if (!created) {
-          toast('Could not load your profile. Contact an administrator.', true);
-          await window.db.auth.signOut();
-          return;
-        }
-        state.user = { id: created.id, name: created.full_name, role: created.role };
-      } else {
-        state.user = { id: profile.id, name: profile.full_name, role: profile.role };
-      }
+    /* ============================= LOGIN ============================= */
+    let loginRole = 'intern';
 
-      if (state.user.role === 'supervisor') {
-        state.logInternSel = state.interns[0] || null;
-      } else {
-        state.logInternSel = state.user.name;
+    async function handleSession(session) {
+      const profile = await ensureProfile(session.user);
+      if (!profile) {
+        toast('Could not load your profile.', true);
+        await window.db.auth.signOut();
+        showLogin();
+        return;
       }
-      await loadTasks();
+      if (profile.role !== 'supervisor') {
+        toast('Supervisor Google sign-in only. Interns should use the Intern tab.', true);
+        await window.db.auth.signOut();
+        showLogin();
+        return;
+      }
+      state.user = { id: profile.id, name: profile.full_name, role: profile.role };
       showApp();
     }
 
-    boot();
-
-    /* ============================= LOGIN SCREEN ============================= */
-    let loginRole = 'intern';
-    let internLoginMode = 'existing'; // 'existing' | 'new'
-
-    function showLogin() {
-      document.getElementById('appShell').style.display = 'none';
-      const root = document.getElementById('loginScreen');
-      root.style.display = 'flex';
-      root.innerHTML = `
+    function renderLoginCard() {
+      document.getElementById('loginCard').innerHTML = `
     <div class="login-card">
       <div class="login-logo">
         <div class="logo-badge">IT</div>
-        <div><div class="login-title">Intern Tracker</div><div class="login-sub">IT Department</div></div>
+        <div>
+          <div class="login-title">Intern Tracker</div>
+          <div class="login-sub">IT Department</div>
+        </div>
       </div>
-      <div class="login-heading">Welcome back</div>
-      <div class="login-desc">Sign in to log today's tasks or review the team's progress.</div>
+      <h1 class="login-heading">Welcome back</h1>
+      <p class="login-desc">Sign in to log daily tasks, track submissions, and manage your intern workflow.</p>
       <div class="role-tabs">
         <button class="role-tab ${loginRole === 'intern' ? 'active' : ''}" data-action="set-login-role" data-role="intern">Intern</button>
         <button class="role-tab ${loginRole === 'supervisor' ? 'active' : ''}" data-action="set-login-role" data-role="supervisor">IT Supervisor</button>
@@ -1612,55 +1635,50 @@
   `;
     }
 
+    function showLogin() {
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('appShell').style.display = 'none';
+      renderLoginCard();
+    }
+
     function renderInternLogin() {
-      if (internLoginMode === 'existing') {
-        const opts = state.interns.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
-        return `
+      // No Google OAuth for interns — name + password only.
+      const opts = state.interns.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+      const deptOpts = DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
+      return `
     <form data-action="login-intern">
       <div class="field">
         <label class="field-label">Select your name</label>
-        <select name="existing" id="internSelect" required>
+        <select name="existing" id="internSelect">
           <option value="">— Select your name —</option>
           ${opts}
         </select>
       </div>
+      <div class="hint" style="margin-bottom:6px">Not on the list? Register below:</div>
       <div class="field">
-        <label class="field-label">Password</label>
-        <input type="password" name="password" id="internPw" placeholder="Enter your password" required>
+        <input type="text" name="newName" placeholder="Full name (new intern)">
       </div>
-      <button class="btn btn-primary btn-full" type="submit">${icon('arrow')} Continue as Intern</button>
-      <div class="login-switch">Not on the list? <button type="button" data-action="set-intern-login-mode" data-mode="new">Register here</button></div>
-    </form>
-  `;
-      }
-
-      const deptOpts = DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
-      return `
-    <form data-action="register-intern">
-      <div class="field">
-        <label class="field-label">Full Name</label>
-        <input type="text" name="newName" placeholder="Type your full name" required>
-      </div>
-      <div class="field">
+      <div class="field" id="deptField" style="display:none">
         <label class="field-label">Department</label>
-        <select name="department" required>
+        <select name="department">
           <option value="">— Select your department —</option>
           ${deptOpts}
         </select>
+        <div class="hint" style="margin-top:4px;">Required for new intern registration.</div>
       </div>
       <div class="field">
-        <label class="field-label">Create a Password</label>
-        <input type="password" name="password" placeholder="Create a password" required>
+        <label class="field-label" id="pwLabel">Password</label>
+        <input type="password" name="password" id="internPw" placeholder="Enter your password" required>
       </div>
-      <button class="btn btn-primary btn-full" type="submit">${icon('arrow')} Register &amp; Continue</button>
-      <div class="login-switch">Already registered? <button type="button" data-action="set-intern-login-mode" data-mode="existing">Select your name</button></div>
+      <div class="hint" id="pwHint" style="margin-top:-6px;margin-bottom:8px">Returning intern: enter your existing password. New intern: create a password for your account.</div>
+      <button class="btn btn-primary btn-full" type="submit">${icon('arrow')} Continue as Intern</button>
     </form>
   `;
     }
 
-
     function renderSupervisorLogin() {
       return `
+    <!-- Google sign-in (primary) -->
     <button class="btn btn-google btn-full" style="margin-bottom:0" data-action="login-google">
       <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
       Continue with Google
@@ -1672,12 +1690,17 @@
     function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
     /* ============================= LOGIN EVENTS ============================= */
+    // Show dept field when user types a new name
+    document.getElementById('loginScreen').addEventListener('input', e => {
+      if (e.target.name === 'newName') {
+        const deptField = document.getElementById('deptField');
+        if (deptField) deptField.style.display = e.target.value.trim() ? 'block' : 'none';
+      }
+    });
+
     document.getElementById('loginScreen').addEventListener('click', e => {
       const roleBtn = e.target.closest('[data-action="set-login-role"]');
-      if (roleBtn) { loginRole = roleBtn.dataset.role; internLoginMode = 'existing'; showLogin(); }
-
-      const modeBtn = e.target.closest('[data-action="set-intern-login-mode"]');
-      if (modeBtn) { internLoginMode = modeBtn.dataset.mode; showLogin(); }
+      if (roleBtn) { loginRole = roleBtn.dataset.role; renderLoginCard(); }
 
       const googleBtn = e.target.closest('[data-action="login-google"]');
       if (googleBtn) loginWithGoogle();
@@ -1688,67 +1711,116 @@
       const form = e.target;
 
       if (form.dataset.action === 'login-intern') {
-        const name = form.existing.value;
+        const existing = form.existing.value;
+        const newName = form.newName.value.trim();
         const password = form.password.value;
-        if (!name) { toast('Please select your name.', true); return; }
+        const deptSel = form.department ? form.department.value : '';
+
+        // Must provide either a selected name or a typed name
+        let name = existing || newName;
+        if (!name) { toast('Please select your name or type a new one.', true); return; }
         if (!password) { toast('Please enter your password.', true); return; }
 
-        const { data: row, error: fetchErr } = await window.db
-          .from('interns').select('password').eq('name', name).maybeSingle();
-        if (fetchErr) { toast('Could not verify your account. Try again.', true); return; }
-        if (!row || !row.password) {
-          const { error: setErr } = await window.db.from('interns').update({ password }).eq('name', name);
-          if (setErr) { toast('Could not set your password.', true); return; }
-          toast('Password set for your account. Welcome!');
-        } else if (row.password !== password) {
-          toast('Incorrect password. Try again.', true);
-          return;
+        if (existing && !newName) {
+          // ── Returning intern: verify stored password in Supabase ───────────────────
+          const { data, error } = await window.db
+            .from('interns')
+            .select('password, department')
+            .eq('name', existing)
+            .maybeSingle();
+
+          if (error) {
+            toast('Database error: ' + error.message, true);
+            return;
+          }
+
+          if (!data) {
+            toast('Intern record not found in database.', true);
+            return;
+          }
+
+          if (!data.password) {
+            // First time logging in with a name that was added by a supervisor
+            // (no password set yet) → treat this login as the password-setup step.
+            const { error: updateErr } = await window.db
+              .from('interns')
+              .update({ password: password })
+              .eq('name', existing);
+
+            if (updateErr) {
+              toast('Failed to set password in database: ' + updateErr.message, true);
+              return;
+            }
+
+            toast('Password set for your account. Welcome!');
+          } else if (data.password !== password) {
+            toast('Incorrect password. Try again.', true);
+            return;
+          }
+          name = existing;
+        } else {
+          // ── New intern: register name + password + department in Supabase ──────────
+          if (!newName) { toast('Please type your full name to register.', true); return; }
+          if (!deptSel) { toast('Please select your department.', true); return; }
+
+          // Check if name already exists in Supabase
+          const { data: existingIntern, error: checkErr } = await window.db
+            .from('interns')
+            .select('password')
+            .eq('name', newName)
+            .maybeSingle();
+
+          if (checkErr) {
+            toast('Database error checking name: ' + checkErr.message, true);
+            return;
+          }
+
+          if (existingIntern) {
+            // Name already exists — verify password instead
+            if (existingIntern.password && existingIntern.password !== password) {
+              toast('That name already exists. Wrong password.', true);
+              return;
+            }
+            if (!existingIntern.password) {
+              // Name exists but no password yet — set it now
+              const { error: updateErr } = await window.db
+                .from('interns')
+                .update({ password: password })
+                .eq('name', newName);
+
+              if (updateErr) {
+                toast('Failed to update password: ' + updateErr.message, true);
+                return;
+              }
+            }
+          } else {
+            // Brand-new intern: insert row into Supabase interns table
+            const { error: insertErr } = await window.db
+              .from('interns')
+              .insert({ name: newName, department: deptSel, password: password });
+
+            if (insertErr) {
+              toast('Failed to create account: ' + insertErr.message, true);
+              return;
+            }
+
+            toast('Account created. Welcome, ' + newName + '!');
+          }
+          name = newName;
         }
+
+        // Re-sync local state
+        await loadInterns();
 
         state.user = { id: null, name, role: 'intern' };
         state.logInternSel = name;
-        await loadTasks();
         showApp();
-        return;
-      }
-
-      if (form.dataset.action === 'register-intern') {
-        const newName = form.newName.value.trim();
-        const password = form.password.value;
-        const deptSel = form.department.value;
-        if (!newName) { toast('Please type your full name to register.', true); return; }
-        if (!deptSel) { toast('Please select your department.', true); return; }
-        if (!password) { toast('Please create a password.', true); return; }
-
-        if (state.interns.includes(newName)) {
-          const { data: row, error: fetchErr } = await window.db
-            .from('interns').select('password').eq('name', newName).maybeSingle();
-          if (fetchErr) { toast('Could not verify your account. Try again.', true); return; }
-          if (row && row.password && row.password !== password) {
-            toast('That name already exists. Wrong password.', true);
-            return;
-          }
-          if (row && !row.password) {
-            await window.db.from('interns').update({ password }).eq('name', newName);
-          }
-        } else {
-          const { error: insErr } = await window.db
-            .from('interns').insert({ name: newName, department: deptSel, password });
-          if (insErr) { toast('Could not create your account.', true); return; }
-          state.interns.push(newName);
-          state.internDepts[newName] = deptSel;
-          toast('Account created. Welcome, ' + newName + '!');
-        }
-
-        state.user = { id: null, name: newName, role: 'intern' };
-        state.logInternSel = newName;
-        await loadTasks();
-        showApp();
-        return;
       }
     });
 
     async function loginWithGoogle() {
+      // redirectTo must match an entry in Supabase → Auth → Redirect URLs.
+      // For a local HTML file use the file's full URL; for a hosted app use its origin.
       const redirectTo = window.location.href.split('?')[0].split('#')[0];
       const { error } = await window.db.auth.signInWithOAuth({
         provider: 'google',
@@ -1758,6 +1830,7 @@
         },
       });
       if (error) toast(error.message || 'Google sign-in failed', true);
+      // Supabase redirects the browser to Google; on return it fires onAuthStateChange.
     }
 
     /* ============================= APP SHELL ============================= */
@@ -1815,16 +1888,19 @@
       const today = todayStr();
       const thu = isThursday(today);
 
-      let ticketDone = 0, emailDone = 0, infoDone = 0, infoTotal = 0;
+      let ticketDone = 0, emailDone = 0, infoDone = 0, infoTotal = 0, entries = [];
       const names = state.user.role === 'supervisor' ? state.interns : [state.user.name];
-      const entries = await getDailyLogsForDate(today, names);
-      for (const { e } of entries) {
-        if (e.ticketing && (e.ticketing.photo || (e.ticketing.remark || '').trim())) ticketDone++;
-        if (e.email && (e.email.photo || (e.email.remark || '').trim())) emailDone++;
-        if (thu && e.infographic) {
-          infoTotal++;
-          const it = e.infographic.items || {};
-          if (it.review && it.design && it.upload) infoDone++;
+      for (const name of names) {
+        const e = await sGet('daily:' + name + ':' + today, true);
+        if (e) {
+          entries.push({ name, e });
+          if (e.ticketing && (e.ticketing.photo || (e.ticketing.remark || '').trim())) ticketDone++;
+          if (e.email && (e.email.photo || (e.email.remark || '').trim())) emailDone++;
+          if (thu && e.infographic) {
+            infoTotal++;
+            const it = e.infographic.items || {};
+            if (it.review && it.design && it.upload) infoDone++;
+          }
         }
       }
       const pendingTasks = state.tasks.filter(t => t.status === 'pending' && (state.user.role === 'supervisor' || t.intern === state.user.name));
@@ -1914,10 +1990,12 @@
     }
 
     async function renderSupervisorDailyLog(container) {
+      // Build dept options
       const deptOpts = ['', ...DEPARTMENTS].map(d =>
         `<option value="${d}" ${state.deptFilter === d ? 'selected' : ''}>${d || 'All Departments'}</option>`
       ).join('');
 
+      // Filter interns by selected department ('' = show all)
       const filteredInterns = state.deptFilter
         ? state.interns.filter(n => state.internDepts[n] === state.deptFilter)
         : state.interns;
@@ -1947,10 +2025,12 @@
       document.getElementById('dlDate').addEventListener('change', e => { state.dateSel = e.target.value; renderSupervisorDailyLogBody(); });
       document.getElementById('dlDept').addEventListener('change', e => {
         state.deptFilter = e.target.value;
+        // Re-filter interns and reset selection
         const fi = state.deptFilter
           ? state.interns.filter(n => state.internDepts[n] === state.deptFilter)
           : state.interns;
         state.logInternSel = fi[0] || null;
+        // Rebuild intern dropdown
         const sel = document.getElementById('dlIntern');
         sel.innerHTML = '<option value="">— Select intern —</option>' +
           fi.map(n => `<option value="${escapeHtml(n)}" ${state.logInternSel === n ? 'selected' : ''}>${escapeHtml(n)}</option>`).join('');
@@ -1965,7 +2045,7 @@
       if (!body) return;
       if (!state.logInternSel) { body.innerHTML = `<div class="empty-state">${icon('users')}<div>No interns added yet. Add one from the Team page.</div></div>`; return; }
       body.innerHTML = `<div class="empty-state">Loading…</div>`;
-      const e = await getDailyLog(state.logInternSel, state.dateSel);
+      const e = await sGet('daily:' + state.logInternSel + ':' + state.dateSel, true);
       const thu = isThursday(state.dateSel);
       body.innerHTML = `
     ${readonlyTaskBlock(1, 'ticket', 'Ticketing System Support', 'Tickets handled across departments', e && e.ticketing)}
@@ -2005,7 +2085,7 @@
     }
     async function loadDraftAndRender() {
       const name = state.user.name;
-      const existing = await getDailyLog(name, state.dateSel);
+      const existing = await sGet('daily:' + name + ':' + state.dateSel, true);
       state.draft = existing || newDailyDraft();
       renderDraft();
     }
@@ -2206,13 +2286,11 @@
     }
 
     function openAddInternModal() {
-      const deptOpts = DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
       openModal(`
     <div class="modal">
       <div class="modal-head"><div class="modal-title">Add Intern</div><button class="modal-close" data-action="close-modal">${icon('x')}</button></div>
       <form data-action="submit-add-intern">
         <div class="field"><label class="field-label">Full Name</label><input type="text" name="name" placeholder="e.g. Maria Santos" required></div>
-        <div class="field"><label class="field-label">Department</label><select name="department">${deptOpts}</select></div>
         <div class="save-bar"><button class="btn btn-ghost" type="button" data-action="close-modal">Cancel</button><button class="btn btn-primary" type="submit">${icon('plus')} Add</button></div>
       </form>
     </div>`);
@@ -2220,19 +2298,25 @@
 
     /* ============================= GLOBAL EVENT DELEGATION ============================= */
     document.addEventListener('click', async e => {
+      // nav
       const navBtn = e.target.closest('[data-action="nav"]');
       if (navBtn) { navigate(navBtn.dataset.view); return; }
 
+      // theme
       if (e.target.closest('[data-action="toggle-theme"]')) { document.body.classList.toggle('light'); return; }
 
+      // logout — properly signs out from Supabase then shows login
       if (e.target.closest('[data-action="logout"]')) {
-        await window.db.auth.signOut();
+        await window.db.auth.signOut();   // clears Supabase JWT from localStorage
         state.user = null;
         state.tasks = [];
+        // onAuthStateChange fires SIGNED_OUT → showLogin() is called there too,
+        // but we do it proactively for zero-flash UX.
         showLogin();
         return;
       }
 
+      // modal actions
       if (e.target.closest('[data-action="close-modal"]')) { closeModal(); return; }
       if (e.target.closest('[data-action="open-assign-modal"]')) { openAssignModal(); return; }
       if (e.target.closest('[data-action="open-add-intern"]')) { openAddInternModal(); return; }
@@ -2240,26 +2324,27 @@
       const completeBtn = e.target.closest('[data-action="open-complete-modal"]');
       if (completeBtn) { openCompleteModal(completeBtn.dataset.id); return; }
 
+      // delete task
       const delBtn = e.target.closest('[data-action="delete-task"]');
       if (delBtn) {
-        const { error } = await window.db.from('tasks').delete().eq('id', delBtn.dataset.id);
-        if (error) { toast('Could not remove task.', true); return; }
         state.tasks = state.tasks.filter(t => t.id !== delBtn.dataset.id);
+        await sSet('tasks', state.tasks, true);
         renderTasksPage(document.getElementById('mainContent'));
         toast('Task removed.');
         return;
       }
 
+      // remove intern
       const remBtn = e.target.closest('[data-action="remove-intern"]');
       if (remBtn) {
-        const { error } = await window.db.from('interns').delete().eq('name', remBtn.dataset.name);
-        if (error) { toast('Could not remove intern.', true); return; }
         state.interns = state.interns.filter(n => n !== remBtn.dataset.name);
+        await sSet('interns', state.interns, true);
         renderTeamPage(document.getElementById('mainContent'));
         toast('Intern removed.');
         return;
       }
 
+      // daily log mode toggle
       const modeBtn = e.target.closest('[data-action="set-mode"]');
       if (modeBtn) {
         const { key, mode } = modeBtn.dataset;
@@ -2267,9 +2352,11 @@
         renderDraft(); return;
       }
 
+      // remove photo
       const rmPhoto = e.target.closest('[data-action="remove-photo"]');
       if (rmPhoto) { state.draft[rmPhoto.dataset.key].photo = null; renderDraft(); return; }
 
+      // quick remark
       const qb = e.target.closest('[data-action="quick-remark"]');
       if (qb) {
         state.draft[qb.dataset.key].remark = qb.dataset.text;
@@ -2278,6 +2365,7 @@
         return;
       }
 
+      // infographic checkbox
       const checkRow = e.target.closest('[data-action="toggle-check"]');
       if (checkRow) {
         const k = checkRow.dataset.key;
@@ -2285,21 +2373,24 @@
         renderDraft(); return;
       }
 
+      // reset draft
       if (e.target.closest('[data-action="reset-draft"]')) { state.draft = newDailyDraft(); renderDraft(); return; }
 
+      // save daily log
       if (e.target.closest('[data-action="save-daily"]')) {
+        // sync textarea content into state before saving
         document.querySelectorAll('[data-bind]').forEach(el => {
           const [k, f] = el.dataset.bind.split('.');
           if (state.draft[k]) state.draft[k][f] = el.value;
         });
         state.draft.completedAt = new Date().toISOString();
-        const ok = await saveDailyLog(state.user.name, state.dateSel, state.draft);
-        if (!ok) { toast('Could not save daily log. Try again.', true); state.draft.completedAt = null; return; }
+        await sSet('daily:' + state.user.name + ':' + state.dateSel, state.draft, true);
         renderDraft();
         toast('Daily log saved!');
         return;
       }
 
+      // task filter
       const filterBtn = e.target.closest('[data-action="set-task-filter"]');
       if (filterBtn) {
         state.taskFilter = filterBtn.dataset.f;
@@ -2325,15 +2416,13 @@
       const form = e.target;
 
       if (form.dataset.action === 'submit-assign') {
-        const { data, error } = await window.db.from('tasks').insert({
-          intern_name: form.intern.value,
-          title: form.title.value.trim(),
-          description: form.desc.value.trim(),
-          due_date: form.due.value || null,
-          status: 'pending',
-        }).select('*').single();
-        if (error) { toast('Could not assign task.', true); return; }
-        state.tasks.unshift(rowToTask(data));
+        const t = {
+          id: uid(), intern: form.intern.value, title: form.title.value.trim(),
+          description: form.desc.value.trim(), dueDate: form.due.value || null,
+          status: 'pending', createdAt: Date.now(),
+        };
+        state.tasks.push(t);
+        await sSet('tasks', state.tasks, true);
         closeModal();
         renderTasksPage(document.getElementById('mainContent'));
         toast('Task assigned!');
@@ -2345,13 +2434,10 @@
         const remark = form.remark.value.trim();
         const previewImg = document.querySelector('#proofPhotoPreview img');
         const photo = previewImg ? previewImg.src : null;
-        const { error } = await window.db.from('tasks').update({
-          status: 'done', proof_remark: remark, proof_photo: photo, completed_at: todayStr(),
-        }).eq('id', id);
-        if (error) { toast('Could not mark task as done.', true); return; }
         state.tasks = state.tasks.map(t => t.id === id
           ? { ...t, status: 'done', proofRemark: remark, proofPhoto: photo, completedAt: todayStr() }
           : t);
+        await sSet('tasks', state.tasks, true);
         closeModal();
         renderTasksPage(document.getElementById('mainContent'));
         toast('Task marked as done!');
@@ -2374,6 +2460,19 @@
         return;
       }
     });
+
+    boot();
+
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+          console.log('ServiceWorker registration successful');
+        }).catch(err => {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
   </script>
 </body>
 
