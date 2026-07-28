@@ -1537,20 +1537,43 @@
       return data.map(row => ({ name: row.intern_name, e: rowToDaily(row) }));
     }
 
+    /* ============================= LOGIN HISTORY SYNC (Supabase: login_history table) =============================
+       Records one row every time someone actually signs in (not on
+       silent session restores from a page refresh). Run the SQL in
+       the setup notes to create this table before this will work. */
+    async function recordLogin(name, role) {
+      try {
+        const { error } = await window.db.from('login_history').insert({
+          user_name: name,
+          role: role,
+        });
+        if (error) console.warn('Failed to record login', error);
+      } catch (e) {
+        console.warn('Failed to record login', e);
+      }
+    }
+    async function getLoginHistoryForDate(dateStr, names) {
+      let query = window.db.from('login_history').select('*').eq('login_date', dateStr).order('logged_in_at', { ascending: false });
+      if (names && names.length) query = query.in('user_name', names);
+      const { data, error } = await query;
+      if (error) { console.warn('Failed to load login history', error); return []; }
+      return data;
+    }
+
     /* ============================= BOOT ============================= */
     async function boot() {
       await loadInterns();
       const { data: { session } } = await window.db.auth.getSession();
 
       if (session) {
-        await handleSession(session);
+        await handleSession(session, false); // restored session — not a fresh login
       } else {
         showLogin();
       }
 
       window.db.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_IN' && session) {
-          await handleSession(session);
+          await handleSession(session, true); // real sign-in (e.g. Google OAuth) — log it
         } else if (event === 'SIGNED_OUT') {
           state.user = null;
           showLogin();
@@ -1560,7 +1583,7 @@
       });
     }
 
-    async function handleSession(session) {
+    async function handleSession(session, isFreshSignIn) {
       await loadInterns();
       const profile = await fetchProfile();
       if (!profile) {
@@ -1580,6 +1603,7 @@
       } else {
         state.logInternSel = state.user.name;
       }
+      if (isFreshSignIn) await recordLogin(state.user.name, state.user.role);
       await loadTasks();
       showApp();
     }
@@ -1706,6 +1730,7 @@
 
         state.user = { id: null, name, role: 'intern' };
         state.logInternSel = name;
+        await recordLogin(name, 'intern');
         await loadTasks();
         showApp();
         return;
@@ -1741,6 +1766,7 @@
 
         state.user = { id: null, name: newName, role: 'intern' };
         state.logInternSel = newName;
+        await recordLogin(newName, 'intern');
         await loadTasks();
         showApp();
         return;
