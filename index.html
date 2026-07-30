@@ -67,24 +67,24 @@
     }
 
     body.light {
-      --bg: #f5efe0;
-      --bg-sidebar: #efe6cf;
-      --bg-card: #f7f1e2;
-      --bg-card-hover: #fbf6ea;
-      --bg-input: #efe6cf;
-      --border: #ddceA0;
-      --border-soft: #e6d9b3;
-      --text: #2c2410;
-      --text-dim: #6b5f3f;
-      --text-faint: #a4966a;
-      --blue-dim: rgba(54, 87, 148, .10);
-      --green-dim: rgba(34, 197, 94, .10);
-      --amber-dim: rgba(204, 170, 73, .24);
-      --red-dim: rgba(239, 68, 68, .10);
-      --purple-dim: rgba(100, 146, 177, .13);
-      --neu: -3px -3px 7px rgba(255, 252, 240, .8), 4px 4px 10px rgba(160, 138, 76, .22);
-      --neu-sm: -2px -2px 4px rgba(255, 252, 240, .7), 3px 3px 7px rgba(160, 138, 76, .18);
-      --neu-inset: inset -2px -2px 5px rgba(255, 252, 240, .75), inset 3px 3px 7px rgba(160, 138, 76, .2);
+      --bg: #e6d8a8;
+      --bg-sidebar: #dbc888;
+      --bg-card: #efe3b8;
+      --bg-card-hover: #f4ebc9;
+      --bg-input: #ddca8c;
+      --border: #c1a24f;
+      --border-soft: #d1b876;
+      --text: #362b0f;
+      --text-dim: #6e5a26;
+      --text-faint: #93803f;
+      --blue-dim: rgba(54, 87, 148, .12);
+      --green-dim: rgba(34, 197, 94, .13);
+      --amber-dim: rgba(204, 170, 73, .34);
+      --red-dim: rgba(239, 68, 68, .13);
+      --purple-dim: rgba(100, 146, 177, .16);
+      --neu: -3px -3px 7px rgba(255, 249, 222, .75), 4px 4px 11px rgba(110, 85, 20, .28);
+      --neu-sm: -2px -2px 4px rgba(255, 249, 222, .65), 3px 3px 8px rgba(110, 85, 20, .24);
+      --neu-inset: inset -2px -2px 5px rgba(255, 249, 222, .7), inset 3px 3px 8px rgba(110, 85, 20, .26);
       --shadow: var(--neu);
     }
 
@@ -391,6 +391,7 @@
     .sidebar.collapsed {
       width: var(--sidebar-w-collapsed);
       padding: 22px 10px;
+      overflow: visible;
     }
 
     .sidebar.collapsed .label-text,
@@ -421,38 +422,23 @@
       padding: 4px 10px 26px;
     }
 
-    .sidebar-toggle {
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
-      background: var(--bg-card);
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-dim);
-      box-shadow: var(--neu-sm);
-      flex-shrink: 0;
-      margin-left: auto;
-      transition: .18s;
-    }
-
-    .sidebar.collapsed .sidebar-toggle {
-      margin-left: 0;
-    }
-
-    .sidebar-toggle:hover {
-      color: var(--text);
-    }
-
+    /* Sits in normal nav flow (reuses .nav-item styling below) so it
+       never competes with the logo for space, collapsed or not. */
     .sidebar-toggle svg {
-      width: 14px;
-      height: 14px;
       transition: transform .2s ease;
     }
 
     .sidebar.collapsed .sidebar-toggle svg {
       transform: rotate(180deg);
+    }
+
+    .sidebar-toggle-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-soft);
     }
 
     .menu-eyebrow {
@@ -1905,7 +1891,11 @@
     <div class="brand">
       <div class="logo-badge">IT</div>
       <div class="brand-text"><div class="login-title">Intern Tracker</div><div class="login-sub" style="font-size:9.5px">IT DEPARTMENT</div></div>
-      <button class="sidebar-toggle" data-action="toggle-sidebar" title="Collapse sidebar">${icon('chevronLeft')}</button>
+    </div>
+    <div class="sidebar-toggle-row">
+      <button class="nav-item sidebar-toggle" data-action="toggle-sidebar" title="${state.sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}">
+        ${icon('chevronLeft')}<span class="label-text">Collapse</span>
+      </button>
     </div>
     <div class="menu-eyebrow label-text">Menu</div>
     <nav class="nav">${nav}</nav>
