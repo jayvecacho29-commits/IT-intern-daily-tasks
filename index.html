@@ -689,6 +689,57 @@
             font-weight: 700;
         }
 
+        /* ── THEME TOGGLE SWITCH ───────────────────────────────────────── */
+        .theme-toggle {
+            justify-content: flex-start;
+        }
+
+        .theme-toggle .switch {
+            margin-left: auto;
+            width: 40px;
+            height: 23px;
+            border-radius: 99px;
+            background: var(--bg-input);
+            box-shadow: var(--neu-inset);
+            position: relative;
+            flex-shrink: 0;
+            transition: background var(--dur-fast) var(--ease-smooth), box-shadow var(--dur-fast) var(--ease-smooth);
+        }
+
+        .theme-toggle .switch.checked {
+            background: var(--accent-gradient);
+            box-shadow: var(--neu-sm), 0 2px 10px var(--accent-glow);
+        }
+
+        .theme-toggle .switch-thumb {
+            position: absolute;
+            top: 2.5px;
+            left: 2.5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--indigo);
+            transition: transform var(--dur) var(--ease-bounce);
+        }
+
+        .theme-toggle .switch-thumb svg {
+            width: 11px;
+            height: 11px;
+        }
+
+        .theme-toggle .switch.checked .switch-thumb {
+            transform: translateX(17px);
+        }
+
+        .sidebar.collapsed .theme-toggle .switch {
+            display: none;
+        }
+
         .main {
             margin-left: var(--sidebar-w);
             flex: 1;
@@ -1664,6 +1715,7 @@
             check2: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12l2 2 4-4"/>',
             users: '<circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.3 6.5-6.3s6.5 2.7 6.5 6.3"/><circle cx="17" cy="8.5" r="2.6"/><path d="M15.8 13.9c2.7.5 4.7 2.7 4.7 6.1"/>',
             sun: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.3M12 19.2v2.3M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.3M19.2 12h2.3M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/>',
+            moon: '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.7 6.7 0 0 0 10.5 10.5z"/>',
             logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>',
             camera: '<path d="M4 8h3l1.5-2.3h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.6"/>',
             note: '<path d="M6 4h9l5 5v11a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M14 4v5h5"/>',
@@ -2209,7 +2261,10 @@
           <div class="user-role">${state.user.role === 'supervisor' ? 'Supervisor' : 'Intern'}</div>
         </div>
       </div>
-      <button class="nav-item" data-action="toggle-theme">${icon('sun')}<span class="label-text">Toggle Theme</span></button>
+      <button class="nav-item theme-toggle" data-action="toggle-theme" aria-label="Toggle light and dark mode">
+        ${icon('sun')}<span class="label-text">Theme</span>
+        <span class="switch ${document.body.classList.contains('light') ? 'checked' : ''}"><span class="switch-thumb">${icon(document.body.classList.contains('light') ? 'sun' : 'moon')}</span></span>
+      </button>
       <button class="nav-item" data-action="logout">${icon('logout')}<span class="label-text">Sign Out</span></button>
     </div>
   `;
@@ -2657,7 +2712,16 @@
 
             if (e.target.closest('[data-action="toggle-sidebar"]')) { toggleSidebar(); return; }
 
-            if (e.target.closest('[data-action="toggle-theme"]')) { document.body.classList.toggle('light'); return; }
+            if (e.target.closest('[data-action="toggle-theme"]')) {
+                document.body.classList.toggle('light');
+                const isLight = document.body.classList.contains('light');
+                document.querySelectorAll('.theme-toggle .switch').forEach(sw => {
+                    sw.classList.toggle('checked', isLight);
+                    const thumb = sw.querySelector('.switch-thumb');
+                    if (thumb) thumb.innerHTML = icon(isLight ? 'sun' : 'moon');
+                });
+                return;
+            }
 
             if (e.target.closest('[data-action="logout"]')) {
                 await window.db.auth.signOut();
